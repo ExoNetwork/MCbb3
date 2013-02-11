@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>tk.manf</groupId>
 	<artifactId>MCbb3</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<name>Minecraft Board Bridge</name>
 	<description>Basically a Bridge between a board and a Minecraft Server</description>
 	<properties>
@@ -13,7 +13,7 @@
 	<repositories>
 		<repository>
 			<id>bukkit-repo</id>
-			<url>http://repo.bukkit.org/artifactory/repo</url>
+			<url>http://repo.bukkit.org/content/groups/public</url>
 		</repository>
 		<repository>
 			<id>org.arakhne-maven</id>

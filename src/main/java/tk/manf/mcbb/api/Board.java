@@ -85,7 +85,10 @@ public class Board {
 	 * @return locale
 	 */
 	public String getLocale(String username){
-		return "deDE";
+        logger.log(Level.INFO, "getLocale(" + username + ")");
+        LuaValue containsUsername = globals.get("getLocale");
+        LuaValue call = containsUsername.call(LuaValue.valueOf(username));
+        return call.checkjstring();
 	}
 
 	/**

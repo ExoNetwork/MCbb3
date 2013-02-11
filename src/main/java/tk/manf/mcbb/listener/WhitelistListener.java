@@ -42,6 +42,8 @@ public class WhitelistListener implements Listener {
         if(!mcbb.isRegistered(username)){
             ev.setKickMessage(_(mcbb.getLocale(username), "error.whitelist"));
             ev.setResult(Result.KICK_WHITELIST);
+        }else {
+            System.out.println(mcbb.getLocale(username));
         }
     }
 }
