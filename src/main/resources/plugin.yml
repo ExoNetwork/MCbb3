@@ -1,0 +1,6 @@
+name: MCbb
+version: 3.0.0
+description: Bridge between a board an a server.
+author: manf
+website: http://manf.tk
+main: tk.manf.mcbb.MCbbPlugin
