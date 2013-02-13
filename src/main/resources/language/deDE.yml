@@ -2,3 +2,9 @@
 error:
   permissions: '&3Du hast keine Permissions!'
   whitelist: '&2Du bist nicht auf der Whitelist'
+  config:
+    filenotfound: '&3Die Config wurde nicht gefunden! Mehr Informationen in der Konsole'
+    illegalconfiguration: '&3Die Config wurde nicht richtig geladen! Siehe Errorlog in der Konsole'
+    io: '&3Hoppla da ist ein Fehler aufgetreten! Mehr Informationen in der Konsole'
+config: 
+  reloaded: '&2Config erfolgreich geladen!' 

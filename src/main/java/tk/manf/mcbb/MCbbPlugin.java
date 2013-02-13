@@ -14,6 +14,7 @@
 
 package tk.manf.mcbb;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 
@@ -22,29 +23,49 @@ import org.bukkit.plugin.java.JavaPlugin;
 import tk.manf.mcbb.api.MCbb;
 import tk.manf.mcbb.api.manager.LanguageManager;
 import tk.manf.mcbb.util.IOTools;
-//TODO: Documentation
+
+/**
+ * Java Plugin use getMCbb() to get the API
+ * @author Björn
+ *
+ */
 public class MCbbPlugin extends JavaPlugin {
     private static final String LANG_FOLDER = "language";
     private MCbb mcbb;
     private Logger logger;
 
-
+    /**
+     * Called whenever the plugin is loaded
+     */
     @Override
     public void onEnable() {
         logger = getLogger();
         getDataFolder().mkdirs();
+        copyDefaultConfig();
         mcbb = new MCbb(this);
-   }
+    }
 
+    /**
+     * Called whenever the plugin is unloaded
+     */
     @Override
     public void onDisable() {
 
     }
 
+    /**
+     * Gets the API Object
+     * @return MCbb
+     */
     public final MCbb getMCbb(){
         return mcbb;
     }
 
+    /**
+     * Loads all Languages into the given LanguageManager
+     * @see LanguageManager
+     * @param langManager
+     */
     public void loadLanguages(LanguageManager langManager) {
         try {
             String template = IOTools.toString(getResource("available_langs"));
@@ -57,12 +78,28 @@ public class MCbbPlugin extends JavaPlugin {
         }
     }
 
+    /**
+     * Tries to register a Language by the given name
+     * @param langManager Language Manager the Language should be added to
+     * @param locale Name of the Language
+     */
     private void registerLanguage(LanguageManager langManager, String locale) {
         try {
-            langManager.addLanguage(locale, getResource(LANG_FOLDER + "/" + locale), getDataFolder());
+            langManager.addLanguage(locale, getResource(LANG_FOLDER + "/" + locale + ".yml"), getDataFolder());
             logger.info("Registering Language: " + locale);
         } catch (IOException e) {
             logger.severe("Errr while loading locale: " + locale);
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Copies default Config to file
+     */
+    private void copyDefaultConfig(){
+        try {
+            IOTools.copyInputStreamToFile(getResource("config.yml"), new File(getDataFolder(), "config.yml"));
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

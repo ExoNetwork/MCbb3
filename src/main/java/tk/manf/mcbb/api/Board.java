@@ -22,6 +22,8 @@ import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
+import tk.manf.mcbb.api.config.Config;
+
 /**
  *
  * Represents the board
@@ -32,28 +34,24 @@ public class Board {
     private Logger logger = null;
     private File boardFile;
     private Globals globals;
+    private Config config;
 
-    public Board(Logger logger, File boardFile) {
+    public Board(Logger logger, File boardFile, Config config) {
         this.logger = logger;
         this.boardFile = boardFile;
-        globals = JsePlatform.standardGlobals();
-        globals.get("dofile").call(LuaValue.valueOf(boardFile.getAbsolutePath()));
+        this.config = config;
+        reloadScripts();
     }
 
 	/**
 	 * Indicates whether or not a username has been registered in the Forum.
 	 * Used for simple whitelist.
-	 * Returns userid for any founded user or -1 if no User was found.
-	 * -2 indicates MySQL Errors
 	 *
 	 * @param username
-	 * @return userid or -1 or -2
+	 * @return boolean
 	 */
-	public int containsUsername(String username) {
-	    logger.log(Level.INFO, "containsUsername(" + username + ")");
-	    LuaValue containsUsername = globals.get("containsUsername");
-        LuaValue call = containsUsername.call(LuaValue.valueOf(username));
-        return call.checkint();
+	public boolean containsUsername(String username) {
+	    return getID(username) > 0;
 	}
 
 	/**
@@ -79,6 +77,14 @@ public class Board {
 		return 0;
 	}
 
+    /**
+     * Returns the default Language
+     * @return locale
+     */
+    public String getDefaultLocale(){
+        return config.getDefaultLanguage();
+    }
+
 	/**
 	 * Returns the personal User-specific language for multi-lingual Support
 	 * @param username
@@ -88,17 +94,25 @@ public class Board {
         logger.log(Level.INFO, "getLocale(" + username + ")");
         LuaValue containsUsername = globals.get("getLocale");
         LuaValue call = containsUsername.call(LuaValue.valueOf(username));
-        return call.checkjstring();
+        String lang = call.checkjstring();
+        if(lang.equalsIgnoreCase("")) {
+            return config.getDefaultLanguage();
+        }
+        return lang;
 	}
 
 	/**
-	 * Returns userid for the user, -1 if no User was found
-	 *
+     * Returns userid for any founded user or -1 if no User was found.
+     * -2 indicates MySQL Errors
+     *
 	 * @param username
-	 * @return userid or -1
+	 * @return userid or -1 or -2
 	 */
 	public int getID(String username){
-		return 0;
+	    logger.log(Level.INFO, "getID(" + username + ")");
+	    LuaValue containsUsername = globals.get("getID");
+	    LuaValue call = containsUsername.call(LuaValue.valueOf(username));
+	    return call.checkint();
 	}
 
 	/**
@@ -117,7 +131,12 @@ public class Board {
 		return new String[]{};
 	}
 
+	/**
+	 * Reloads script
+	 */
 	public void reloadScripts(){
-
+        globals = JsePlatform.standardGlobals();
+        //globals.loadFile(boardFile.getAbsolutePath());
+        globals.get("dofile").call(LuaValue.valueOf(boardFile.getAbsolutePath()));
 	}
 }

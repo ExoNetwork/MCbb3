@@ -4,11 +4,10 @@
 	<groupId>tk.manf</groupId>
 	<artifactId>MCbb3</artifactId>
 	<version>0.0.2-SNAPSHOT</version>
-	<name>Minecraft Board Bridge</name>
 	<description>Basically a Bridge between a board and a Minecraft Server</description>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
+		<main.class>tk.manf.mcbb.MCbbPlugin</main.class>
 	</properties>
 	<repositories>
 		<repository>
@@ -20,6 +19,10 @@
 			<name>Arakhne.org Snapshots</name>
 			<url>http://download.tuxfamily.org/arakhne/maven/</url>
 		</repository>
+     <repository>
+          <id>ranzdo-repo</id>
+          <url>http://ci.ranzdo.se/plugin/repository/everything/</url>
+    </repository>
 	</repositories>
 
 	<dependencies>
@@ -33,9 +36,21 @@
 			<artifactId>luaj-jse</artifactId>
 			<version>3.0-alpha2</version>
 		</dependency>
+		<dependency>
+		  <groupId>se.ranzdo.bukkit</groupId>
+		  <artifactId>methodcommand</artifactId>
+		  <version>0.1</version>
+		</dependency>
 	</dependencies>
 
 	<build>
+		<finalName>${project.name}</finalName>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -70,11 +85,12 @@
 							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 						</manifest>
 						<manifestEntries>
-							<Class-Path>lib/luaJ.jar ../lib/luaJ.jar ../luaJ.jar</Class-Path>
+							<Class-Path>lib/luaJ.jar ../lib/luaJ.jar ../MethodCommand.jar lib/MethodCommand.jar ../lib/MethodCommand.jar ../MethodCommand.jar</Class-Path>
 						</manifestEntries>
 					</archive>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
+	<name>MCbb</name>
 </project>

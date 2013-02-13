@@ -19,17 +19,19 @@ import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
+import se.ranzdo.bukkit.methodcommand.CommandHandler;
 import tk.manf.mcbb.MCbbPlugin;
 import tk.manf.mcbb.api.config.Config;
 import tk.manf.mcbb.api.manager.LanguageManager;
+import tk.manf.mcbb.commands.AdminCommands;
 import tk.manf.mcbb.listener.WhitelistListener;
 
 public class MCbb {
-    //TODO: Documentation
     private static Board board;
     private static LanguageManager langManager;
 
@@ -39,13 +41,15 @@ public class MCbb {
     public MCbb(MCbbPlugin plugin){
         logger = plugin.getLogger();
         File dataFolder = plugin.getDataFolder();
-        config = new Config(dataFolder);
+        config = new Config(dataFolder, logger);
         File scriptFile = new File(dataFolder , config.getScript() + ".lua");
-        board = new Board(logger, scriptFile);
+        board = new Board(logger, scriptFile, config);
         langManager = new LanguageManager(logger);
         plugin.loadLanguages(langManager);
         //luaTest(plugin.getDataFolder());
         registerListener(plugin);
+        CommandHandler handler = new CommandHandler(plugin);
+        handler.registerCommands(new AdminCommands(config));
     }
 
     public boolean isRegistered(String username) {
@@ -53,11 +57,7 @@ public class MCbb {
             case CUSTOM_PROFILE_FIELDS:
                 throw new UnsupportedOperationException("Custome Profile Fields not implemented yet!");
             case USERNAME:
-                int id = board.containsUsername(username);
-                if(id == -2){
-                    throw new UnsupportedOperationException("MySQL error in Board for isRegistered()");
-                }
-                return  id > 0;
+                return board.containsUsername(username);
             default:
                 logger.severe("Unknown Authentification Mode for isRegistered()");
                 return false;
@@ -90,8 +90,13 @@ public class MCbb {
     }
 
     public static String _(CommandSender sender, String node, Object... args) {
-        String locale = board.getLocale(sender.getName());
-        return _(locale, node, args);
+        String locale;
+        if(sender instanceof ConsoleCommandSender){
+            locale = board.getDefaultLocale();
+        }else{
+            locale = board.getLocale(sender.getName());
+        }
+        return ChatColor.translateAlternateColorCodes('&', _(locale, node, args));
     }
 
     public static String _(String locale, String node, Object... args){
