@@ -20,6 +20,7 @@ import static tk.manf.mcbb.api.config.SecurityMode.WHITELIST;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -27,12 +28,29 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 public class Config {
-    private static final String DEFAULT_LANGUAGE = "default.language";
-    private static final String MODE_SECURITY = "mode.security";
-    private static final String MODE_AUTHENTIFICATION = "mode.authentification";
-    private static final String SCRIPT = "script";
-    private static final String FIRST_RUN = "first-run";
-
+    /** Configuration Sections*/
+    /** */
+    private static final String DEFAULT_LANGUAGE            = "default.language";
+    private static final String MODE_SECURITY               = "mode.security";
+    private static final String MODE_AUTHENTIFICATION       = "mode.authentification";
+    private static final String SCRIPT                      = "script";
+    private static final String FIRST_RUN                   = "first-run";
+    private static final String GREYLIST_PROTECTIONS        = "greylist.protections";
+    /** Greylist Portections*/
+    /** */
+    public static final String GREYLIST_ENTITY_INTERACT     = "ENTITY_INTERACT";
+    public static final String GREYLIST_ITEM_DROP           = "ITEM_DROP";
+    public static final String GREYLIST_ITEM_PICKUP         = "ITEM_PICKUP";
+    public static final String GREYLIST_PLAYER_BED          = "PLAYER_BED";
+    public static final String GREYLIST_PLAYER_BUKKET       = "PLAYER_BUKKET";
+    public static final String GREYLIST_PLAYER_CHAT         = "PLAYER_CHAT";
+    public static final String GREYLIST_PLAYER_COMMAND      = "PLAYER_COMMAND";
+    public static final String GREYLIST_PLAYER_FISHING      = "PLAYER_FISHING";
+    public static final String GREYLIST_PLAYER_INTERACT     = "PLAYER_INTERACT";
+    public static final String GREYLIST_PLAYER_PORTAL       = "PLAYER_PORTAL";
+    public static final String GREYLIST_PLAYER_SHEAR        = "PLAYER_SHEAR";
+    /** Values*/
+    /** */
     private SecurityMode secMode = null;
     private AuthentificationMode authMode = null;
     private String script = null;
@@ -40,7 +58,15 @@ public class Config {
     private Logger logger;
     private File configFile;
     private FileConfiguration config;
+    private List<String> greylistProtections;
 
+
+
+    /**
+     * Initialize a new Config
+     * @param dataFolder
+     * @param logger
+     */
     public Config(File dataFolder, Logger logger){
         configFile = new File(dataFolder, "config.yml");
         config = YamlConfiguration.loadConfiguration(configFile);
@@ -72,6 +98,10 @@ public class Config {
         return secMode;
     }
 
+    public boolean isGreylistProtected(String protection) {
+        return greylistProtections.contains(protection);
+    }
+
     public void setAuthentificationMode(AuthentificationMode authMode) {
         this.authMode = authMode;
     }
@@ -88,7 +118,15 @@ public class Config {
         this.secMode = secMode;
     }
 
-    public void load() throws FileNotFoundException, IOException, InvalidConfigurationException{
+    public void addGreylistProtection(String protection) {
+        greylistProtections.add(protection);
+    }
+
+    public void removeGreylistProtection(String protection) {
+        greylistProtections.remove(protection);
+    }
+
+    public void load() throws FileNotFoundException, IOException, InvalidConfigurationException {
         config.load(configFile);
         assign();
     }
@@ -99,6 +137,7 @@ public class Config {
         config.set(MODE_SECURITY, secMode.name());
         config.set(MODE_AUTHENTIFICATION, authMode.name());
         config.set(FIRST_RUN, null);
+        config.set(GREYLIST_PROTECTIONS, greylistProtections);
         config.save(configFile);
     }
 
@@ -107,6 +146,7 @@ public class Config {
         script = getString(SCRIPT, "wbb");
         secMode = stringToSecurityMode(getString(MODE_SECURITY, WHITELIST.name()));
         authMode = stringToAuthentificationMode(getString(MODE_AUTHENTIFICATION, USERNAME.name()));
+        greylistProtections = getList(GREYLIST_PROTECTIONS);
         if(config.getBoolean("first-run", false)){
             firstRun();
         }
@@ -145,6 +185,10 @@ public class Config {
 
     private String getString(String node, String def){
         return config.getString(node, def);
+    }
+
+    private List<String> getList(String node) {
+        return config.getStringList(node);
     }
 
 }

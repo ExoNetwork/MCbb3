@@ -31,11 +31,21 @@ import tk.manf.mcbb.api.config.Config;
  *
  */
 public class Board {
-    private Logger logger = null;
+    /** Lua-File for the Script*/
     private File boardFile;
+    /** Global lua environment*/
     private Globals globals;
+    /** Config file*/
     private Config config;
+    /** Logger */
+    private Logger logger;
 
+    /**
+     * Initialises a new Board
+     * @param logger
+     * @param boardFile
+     * @param config
+     */
     public Board(Logger logger, File boardFile, Config config) {
         this.logger = logger;
         this.boardFile = boardFile;
@@ -91,7 +101,6 @@ public class Board {
 	 * @return locale
 	 */
 	public String getLocale(String username){
-        logger.log(Level.INFO, "getLocale(" + username + ")");
         LuaValue containsUsername = globals.get("getLocale");
         LuaValue call = containsUsername.call(LuaValue.valueOf(username));
         String lang = call.checkjstring();
@@ -108,8 +117,7 @@ public class Board {
 	 * @param username
 	 * @return userid or -1 or -2
 	 */
-	public int getID(String username){
-	    logger.log(Level.INFO, "getID(" + username + ")");
+	public int getID(String username) {
 	    LuaValue containsUsername = globals.get("getID");
 	    LuaValue call = containsUsername.call(LuaValue.valueOf(username));
 	    return call.checkint();
@@ -135,6 +143,7 @@ public class Board {
 	 * Reloads script
 	 */
 	public void reloadScripts(){
+	    logger.log(Level.INFO, "Reloading LuaEngine");
         globals = JsePlatform.standardGlobals();
         //globals.loadFile(boardFile.getAbsolutePath());
         globals.get("dofile").call(LuaValue.valueOf(boardFile.getAbsolutePath()));

@@ -8,3 +8,7 @@ error:
     io: '&3Hoppla da ist ein Fehler aufgetreten! Mehr Informationen in der Konsole'
 config: 
   reloaded: '&2Config erfolgreich geladen!' 
+registered:
+  welcome: '&2Wilkommen auf unserem Server, {0}!'
+greylist: 
+  protected: '&3Bitte registriere dich erst in unserem Forum!'

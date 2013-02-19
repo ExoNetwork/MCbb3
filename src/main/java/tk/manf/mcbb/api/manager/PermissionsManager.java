@@ -36,10 +36,15 @@ public final class PermissionsManager {
 }
 
 enum PermissionNode {
-	ADMIN(""), ASDF("");
+	MAINTAINER(""),
+	VIP("vip"),
+	VIP_OVERRIDE(VIP, "override");
 
+	PermissionNode(PermissionNode parent, String node) {
+	    this.node = parent.getNode() + "." + node;
+	}
 	PermissionNode(String node){
-		node = PARENT + node;
+		this.node = PARENT + "." + node;
 	}
 
 	public String getNode() {

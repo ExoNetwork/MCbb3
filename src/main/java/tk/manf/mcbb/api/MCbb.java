@@ -52,6 +52,12 @@ public class MCbb {
         handler.registerCommands(new AdminCommands(config));
     }
 
+    /**
+     * Test if the given User is considered to be a full Member
+     * or if he needs to register on the forum first.
+     * @param username
+     * @return boolean
+     */
     public boolean isRegistered(String username) {
         switch(config.getAuthentificationMode()) {
             case CUSTOM_PROFILE_FIELDS:
@@ -62,6 +68,10 @@ public class MCbb {
                 logger.severe("Unknown Authentification Mode for isRegistered()");
                 return false;
         }
+    }
+
+    public boolean isGreylistProtected(String protection) {
+        return config.isGreylistProtected(protection);
     }
 
     public final Board getBoard(){

@@ -1,32 +1,162 @@
 package tk.manf.mcbb.listener;
 
+import static tk.manf.mcbb.api.MCbb._;
+import static tk.manf.mcbb.api.config.Config.GREYLIST_ENTITY_INTERACT;
+import static tk.manf.mcbb.api.config.Config.GREYLIST_ITEM_DROP;
+import static tk.manf.mcbb.api.config.Config.GREYLIST_ITEM_PICKUP;
+import static tk.manf.mcbb.api.config.Config.GREYLIST_PLAYER_BED;
+import static tk.manf.mcbb.api.config.Config.GREYLIST_PLAYER_BUKKET;
+import static tk.manf.mcbb.api.config.Config.GREYLIST_PLAYER_CHAT;
+import static tk.manf.mcbb.api.config.Config.GREYLIST_PLAYER_COMMAND;
+import static tk.manf.mcbb.api.config.Config.GREYLIST_PLAYER_FISHING;
+import static tk.manf.mcbb.api.config.Config.GREYLIST_PLAYER_INTERACT;
+import static tk.manf.mcbb.api.config.Config.GREYLIST_PLAYER_PORTAL;
+import static tk.manf.mcbb.api.config.Config.GREYLIST_PLAYER_SHEAR;
+
+import java.util.ArrayList;
+
+import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerAnimationEvent;
+import org.bukkit.event.player.PlayerBedEnterEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerBucketFillEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerFishEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerShearEntityEvent;
 
+import tk.manf.mcbb.api.MCbb;
 public class GreylistListener implements Listener{
-    //Im still need to look which events needs to be possibly added to greylistening
+    /** Cache containing each greylisted User*/
+    private ArrayList<String> greylist = new ArrayList<String>();
+    /** MCbb Instance*/
+    private MCbb mcbb;
 
-    /*//AsyncPlayerChatEvent -> CHAT
-    //PlayerAnimationEvent -> Nur wenn interactive verboten
-    //PlayerBedEnterEvent -> Kein bett
-    //PlayerBucketEmptyEvent -> Kein Eimer
-    //PlayerBucketFillEvent -> Kein Eimer
-    PlayerCommandPreprocessEvent    Called early in the command handling process.
-    PlayerDropItemEvent Thrown when a player drops an item from their inventory
-    PlayerEggThrowEvent Called when a player throws an egg and it might hatch
-    PlayerExpChangeEvent    Called when a players experience changes naturally
-    PlayerFishEvent Thrown when a player is fishing
-    PlayerInteractEntityEvent   Represents an event that is called when a player right clicks an entity.
-    PlayerInteractEvent Called when a player interacts with an object or air.
-    PlayerItemHeldEvent Fired when a player changes their currently held item
-    PlayerLevelChangeEvent  Called when a players level changes
-    PlayerPickupItemEvent   Thrown when a player picks an item up from the ground
-    PlayerPortalEvent   Called when a player is about to teleport because it is in contact with a portal
-    PlayerRegisterChannelEvent  This is called immediately after a player registers for a plugin channel.
-    PlayerShearEntityEvent  Called when a player shears an entity
-    PlayerTeleportEvent Holds information for player teleport events
-    PlayerToggleFlightEvent Called when a player toggles their flying state
-    PlayerToggleSneakEvent  Called when a player toggles their sneaking state
-    PlayerToggleSprintEvent Called when a player toggles their sprinting state
+    /**
+     * Initializes a new Greylist-Listener
+     * @param mcbb
+     */
+    public GreylistListener(final MCbb mcbb) {
+        this.mcbb = mcbb;
+    }
 
-    PlayerMoveEvent Holds information for player movement events*/
+
+    /**
+     * Called everytime a User joins.
+     * Add users to cache.
+     * @param ev
+     */
+    @EventHandler
+    public void onPlayerJoin(final PlayerJoinEvent ev) {
+        final Player player = ev.getPlayer();
+        final String username = player.getName();
+        if(mcbb.isRegistered(username)) {
+            player.sendMessage(_(player, "registered.welcome", username));
+        } else {
+            greylist.add(username);
+        }
+    }
+
+    /**
+     * Called everytime a User leaves.
+     * Clears cache
+     * @param ev
+     */
+    @EventHandler
+    public void onPlayerQuit(final PlayerQuitEvent ev) {
+        final Player player = ev.getPlayer();
+        final String username = player.getName();
+        if(greylist.contains(username)) {
+            greylist.remove(username);
+        }
+    }
+
+    @EventHandler
+    public void onBucketFill(final PlayerBucketFillEvent ev) {
+        handleEvent(GREYLIST_PLAYER_BUKKET, ev, ev.getPlayer());
+    }
+
+    @EventHandler
+    public void onBucketEmpty(final PlayerBucketEmptyEvent ev) {
+        handleEvent(GREYLIST_PLAYER_BUKKET, ev, ev.getPlayer());
+    }
+
+    @EventHandler
+    public void onCommand(final PlayerCommandPreprocessEvent ev) {
+        handleEvent(GREYLIST_PLAYER_COMMAND, ev, ev.getPlayer());
+    }
+
+    @EventHandler
+    public void onPlayerChat(final AsyncPlayerChatEvent ev) {
+        handleEvent(GREYLIST_PLAYER_CHAT, ev, ev.getPlayer());
+
+    }
+
+    @EventHandler
+    public void onPlayerBedEnter(final PlayerBedEnterEvent ev) {
+        handleEvent(GREYLIST_PLAYER_BED, ev, ev.getPlayer());
+    }
+
+    @EventHandler
+    public void onItemDrop(final PlayerDropItemEvent ev) {
+        handleEvent(GREYLIST_ITEM_DROP, ev, ev.getPlayer());
+    }
+
+    @EventHandler
+    public void onItemPickup(final PlayerPickupItemEvent ev) {
+        handleEvent(GREYLIST_ITEM_PICKUP, ev, ev.getPlayer());
+    }
+
+    @EventHandler
+    public void onPortalPort(final PlayerPortalEvent ev) {
+        handleEvent(GREYLIST_PLAYER_PORTAL, ev, ev.getPlayer());
+    }
+
+    @EventHandler
+    public void onAnimation(final PlayerAnimationEvent ev) {
+        handleEvent(GREYLIST_PLAYER_INTERACT, ev, ev.getPlayer());
+    }
+
+    @EventHandler
+    public void onInteract(final PlayerInteractEvent ev) {
+        handleEvent(GREYLIST_PLAYER_INTERACT, ev, ev.getPlayer());
+    }
+
+    @EventHandler
+    public void onEntity(final PlayerInteractEntityEvent ev) {
+        handleEvent(GREYLIST_ENTITY_INTERACT, ev, ev.getPlayer());
+    }
+
+    @EventHandler
+    public void onPortalPort(final PlayerShearEntityEvent ev) {
+        handleEvent(GREYLIST_PLAYER_SHEAR, ev, ev.getPlayer());
+    }
+    @EventHandler
+    public void onPortalPort(final PlayerFishEvent ev) {
+        handleEvent(GREYLIST_PLAYER_FISHING, ev, ev.getPlayer());
+    }
+
+    private void handleEvent(final String protection, final Cancellable ev, final Player player){
+        handleEvent(protection, ev, player, true);
+    }
+
+    private void handleEvent(final String protection, final Cancellable ev, final Player player, boolean announce){
+        if(ev.isCancelled()) return;
+        if(mcbb.isGreylistProtected(protection)) {
+            ev.setCancelled(mcbb.isRegistered(player.getName()));
+            if(announce) {
+                player.sendMessage(_(player, "greylist.protected"));
+            }
+        }
+    }
 }

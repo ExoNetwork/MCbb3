@@ -28,7 +28,7 @@ import tk.manf.mcbb.api.MCbb;
 public class WhitelistListener implements Listener {
     private MCbb mcbb;
 
-    public WhitelistListener(MCbb mcbb){
+    public WhitelistListener(final MCbb mcbb){
         this.mcbb = mcbb;
     }
     /**
