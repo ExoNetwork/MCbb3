@@ -132,12 +132,29 @@ public class Board {
 	}
 
 	/**
-	 * Returns an Array with all Usergroups
+	 * Returns an Array with all Usergroupids
 	 * @return Grouparray
 	 */
 	public String[] getGroups() {
 		return new String[]{};
 	}
+
+    /**
+     * Returns the main Group for the given User, null if no User was found
+     * @return groupname
+     */
+    public void setMainGroup(String username, String group) {
+        //
+    }
+
+    /**
+     * Returns the main Group for the given User, null if no User was found
+     * @return groupname
+     */
+    public void setGroups(String username, String[] groups) {
+        //
+    }
+
 
 	/**
 	 * Reloads script

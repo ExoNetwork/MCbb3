@@ -27,6 +27,7 @@ import org.luaj.vm2.lib.jse.JsePlatform;
 import se.ranzdo.bukkit.methodcommand.CommandHandler;
 import tk.manf.mcbb.MCbbPlugin;
 import tk.manf.mcbb.api.config.Config;
+import tk.manf.mcbb.api.config.SyncHost;
 import tk.manf.mcbb.api.manager.LanguageManager;
 import tk.manf.mcbb.commands.AdminCommands;
 import tk.manf.mcbb.listener.WhitelistListener;
@@ -76,6 +77,10 @@ public class MCbb {
 
     public final Board getBoard(){
         return board;
+    }
+
+    public SyncHost getSyncHost(){
+        return config.getSyncHost();
     }
 
     /**

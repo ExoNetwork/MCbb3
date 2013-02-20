@@ -16,6 +16,7 @@ package tk.manf.mcbb.api.config;
 
 import static tk.manf.mcbb.api.config.AuthentificationMode.USERNAME;
 import static tk.manf.mcbb.api.config.SecurityMode.WHITELIST;
+import static tk.manf.mcbb.api.config.SyncHost.FORUM;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -36,7 +37,9 @@ public class Config {
     private static final String SCRIPT                      = "script";
     private static final String FIRST_RUN                   = "first-run";
     private static final String GREYLIST_PROTECTIONS        = "greylist.protections";
-    /** Greylist Portections*/
+    private static final String SYNC_HOST                   = "sync.host";
+
+    /** Greylist Protections*/
     /** */
     public static final String GREYLIST_ENTITY_INTERACT     = "ENTITY_INTERACT";
     public static final String GREYLIST_ITEM_DROP           = "ITEM_DROP";
@@ -49,17 +52,18 @@ public class Config {
     public static final String GREYLIST_PLAYER_INTERACT     = "PLAYER_INTERACT";
     public static final String GREYLIST_PLAYER_PORTAL       = "PLAYER_PORTAL";
     public static final String GREYLIST_PLAYER_SHEAR        = "PLAYER_SHEAR";
+
     /** Values*/
     /** */
-    private SecurityMode secMode = null;
-    private AuthentificationMode authMode = null;
-    private String script = null;
-    private String defaultLanguage;
-    private Logger logger;
-    private File configFile;
-    private FileConfiguration config;
-    private List<String> greylistProtections;
-
+    private AuthentificationMode authMode                   = null;
+    private SyncHost syncHost                               = null;
+    private SecurityMode secMode                            = null;
+    private String script                                   = null;
+    private String defaultLanguage                          = null;
+    private Logger logger                                   = null;
+    private File configFile                                 = null;
+    private FileConfiguration config                        = null;
+    private List<String> greylistProtections                = null;
 
 
     /**
@@ -98,6 +102,10 @@ public class Config {
         return secMode;
     }
 
+    public SyncHost getSyncHost() {
+        return syncHost;
+    }
+
     public boolean isGreylistProtected(String protection) {
         return greylistProtections.contains(protection);
     }
@@ -116,6 +124,10 @@ public class Config {
 
     public void setSecurityMode(SecurityMode secMode) {
         this.secMode = secMode;
+    }
+
+    public void setSyncHost(SyncHost syncHost) {
+        this.syncHost = syncHost;
     }
 
     public void addGreylistProtection(String protection) {
@@ -146,6 +158,7 @@ public class Config {
         script = getString(SCRIPT, "wbb");
         secMode = stringToSecurityMode(getString(MODE_SECURITY, WHITELIST.name()));
         authMode = stringToAuthentificationMode(getString(MODE_AUTHENTIFICATION, USERNAME.name()));
+        syncHost = stringToSyncHost(getString(SYNC_HOST, FORUM.name()));
         greylistProtections = getList(GREYLIST_PROTECTIONS);
         if(config.getBoolean("first-run", false)){
             firstRun();
@@ -183,6 +196,17 @@ public class Config {
         }
     }
 
+    //UGLY Workaround
+    private SyncHost stringToSyncHost(String name){
+        try {
+            return SyncHost.valueOf(name);
+        }catch(IllegalArgumentException e){
+            logger.severe("Synchost invalid");
+            e.printStackTrace();
+            return FORUM;
+        }
+    }
+
     private String getString(String node, String def){
         return config.getString(node, def);
     }
@@ -190,5 +214,4 @@ public class Config {
     private List<String> getList(String node) {
         return config.getStringList(node);
     }
-
 }

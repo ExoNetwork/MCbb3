@@ -19,10 +19,14 @@
 			<name>Arakhne.org Snapshots</name>
 			<url>http://download.tuxfamily.org/arakhne/maven/</url>
 		</repository>
-     <repository>
-          <id>ranzdo-repo</id>
-          <url>http://ci.ranzdo.se/plugin/repository/everything/</url>
-    </repository>
+		<repository>
+			<id>ranzdo-repo</id>
+			<url>http://ci.ranzdo.se/plugin/repository/everything/</url>
+		</repository>
+		<repository>
+			<id>vault-repo</id>
+			<url>http://ci.herocraftonline.com/plugin/repository/everything</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
@@ -37,9 +41,16 @@
 			<version>3.0-alpha2</version>
 		</dependency>
 		<dependency>
-		  <groupId>se.ranzdo.bukkit</groupId>
-		  <artifactId>methodcommand</artifactId>
-		  <version>0.1</version>
+			<groupId>se.ranzdo.bukkit</groupId>
+			<artifactId>methodcommand</artifactId>
+			<version>0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>net.milkbowl.vault</groupId>
+			<artifactId>Vault</artifactId>
+			<version>1.2.23-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 
@@ -85,7 +96,9 @@
 							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 						</manifest>
 						<manifestEntries>
-							<Class-Path>lib/luaJ.jar ../lib/luaJ.jar ../MethodCommand.jar lib/MethodCommand.jar ../lib/MethodCommand.jar ../MethodCommand.jar</Class-Path>
+							<Class-Path>lib/luaJ.jar ../lib/luaJ.jar ../MethodCommand.jar
+								lib/MethodCommand.jar ../lib/MethodCommand.jar
+								../MethodCommand.jar</Class-Path>
 						</manifestEntries>
 					</archive>
 				</configuration>
